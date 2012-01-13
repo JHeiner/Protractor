@@ -25,12 +25,38 @@ This project also contains unit tests for the library, and a bare-bones GUI
 for interactive testing.
 
 
-Building
---------
+Dependencies
+------------
 
 The library has no dependencies, but the unit tests do. I am using version
-0.11.2 of SBT to manage them. As expected the `test` task runs the unit
-tests. To run the interactive test gui use `test:run`.
+0.11.2 of SBT to manage them. You will need to run `sbt update` as the first
+step of any build (of course, this is automatic if you build with SBT).
+
+
+Building with SBT
+-----------------
+
+As expected the `test` task runs the unit tests. To run the interactive test
+gui use `test:run`.
+
+
+Building with Eclipse
+---------------------
+
+I am using the 2.9.x flavor of version 2.0.0 of Scala-IDE. I am also going
+against recommendations and using Eclipse 3.7 (Indigo) and JDK 7u2. Here's
+how to add the three Protractor projects to your workspace:
+
+ * menu `File / Import...`
+ * source `General / Existing Projects into Workspace`
+ * option `Select root directory` browse to the git working directory
+ * the three projects should be listed and all be selected
+ * do **NOT** copy them into workspace - you will break links
+ * just click `Finish`
+
+_Warning_ : The TestGUI and UnitTests source code links overlap, so be
+careful about opening files from the correct project. Sigh... perhaps some
+day resource filters will work with linked resources.
 
 
 Release Notes

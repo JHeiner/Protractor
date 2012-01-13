@@ -1,4 +1,8 @@
-
+/eclipseGUI/bin/
+/eclipseGUI/.cache
+/eclipseLib/bin/
+/eclipseLib/.cache
+/eclipseTest/bin/
+/eclipseTest/.cache
 /project/
 /target/
-

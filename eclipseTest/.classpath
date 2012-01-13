@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="protractor/test/" kind="src" path="scala"/>
+	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="ivyresolved-test/junit-4.7.jar"/>
+	<classpathentry kind="lib" path="ivyresolved-test/scalacheck_2.9.1-1.9.jar"/>
+	<classpathentry kind="lib" path="ivyresolved-test/specs2_2.9.1-1.6.1.jar"/>
+	<classpathentry kind="lib" path="ivyresolved-test/specs2-scalaz-core_2.9.1-6.0.1.jar"/>
+	<classpathentry kind="lib" path="ivyresolved-test/test-interface-0.5.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ProtractorLibrary"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
