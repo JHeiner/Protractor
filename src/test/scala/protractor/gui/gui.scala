@@ -28,7 +28,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package protractor.test
+package protractor.gui
 
 import protractor._
 import java.awt.{Color,Dimension,Graphics2D}
