@@ -42,8 +42,7 @@ import protractor.minutiae.SeqReal.toSeqReal
 //import java.awt.event.MouseEvent.{MOUSE_PRESSED,MOUSE_DRAGGED,MOUSE_RELEASED}
 import scala.collection.immutable.TreeMap
 
-@org.junit.runner.RunWith(classOf[runner.JUnitRunner])
-class Protractor extends Specification with ScalaCheck with DataTables
+class Spec extends SpecificationWithJUnit with ScalaCheck with DataTables
 {
   type XYArray = Array[Double]
 
