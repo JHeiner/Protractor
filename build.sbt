@@ -28,14 +28,35 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+name := "protractor"
 
-version in Global := "0.2.0"
+version := "0.2.1"
 
-scalaVersion in Global := "2.9.1"
+scalaVersion := "2.9.1"
 
-scalacOptions in Global ++= Seq("-optimize","-Xlint","-deprecation","-unchecked")
+scalacOptions ++= Seq("-optimize","-Xlint","-deprecation","-unchecked")
 
-compileOrder in Global := CompileOrder.JavaThenScala
+libraryDependencies ++= Seq(
+	"org.scala-tools.testing" %% "scalacheck" % "1.9" % "test" ,
+	"org.specs2" %% "specs2" % "1.6.1" % "test" ,
+	"org.specs2" %% "specs2-scalaz-core" % "6.0.1" % "test" ,
+	"junit" % "junit" % "4.7" % "test" )
 
-run in Compile <<= run in Compile in "gui"
+//run in Compile <<= run in Compile in "gui"
+//fork := true
 
+update <<= (update,target) map { (u,t) => {
+	// collect the dependencies for eclipse...
+	for ( c <- u.configurations ) {
+	  val dir = t / ("ivyresolved-"+c.configuration)
+	  IO.delete(dir)
+	  val map = new scala.collection.mutable.HashMap[String,File]
+	  for ( m <- c.modules ; (a,file) <- m.artifacts ) {
+	    if ( ! file.getName.equals( "scala-library.jar" ) ) {
+	      require( ! map.contains( file.getName ),
+	               "duplicate: "+ file +" and "+ map(file.getName) )
+	      map.put( file.getName, file ) } }
+	  if ( ! map.isEmpty ) IO.createDirectory(dir)
+	  map.values foreach { file =>
+	       IO.copyFile( file, new File( dir, file.getName ) ) } }
+	u } }

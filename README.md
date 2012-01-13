@@ -11,15 +11,15 @@ The Protractor Gesture Recognition Algorithm in Scala
 In December while working on my Sudoku app I thought it would be nice to
 recognize numbers scribbled on a touch-screen. In my search for a library to
 handle this I stumbled across the **$1** algorithm and thought I would test
-their claim of being easy to implement. In doing that I became interested in
-the details, and that is what started this project.
+their claim of being easy to implement. In doing that I became more and more
+interested, and that is what started this project.
 
 Details on the algorithm itself will be added to the scaladoc comments.
 
 The library lives in the `protractor` and `protractor.minutiae` packages.
 Given the small size of the algorithm it is difficult to justify hiding
 implementation details, so everything is public. But typical applications
-would only need to use the API defined in the top-level package. 
+should only need to use the API defined in the top-level package. 
 
 This project also contains unit tests for the library, and a bare-bones GUI
 for interactive testing.
@@ -29,13 +29,8 @@ Building
 --------
 
 The library has no dependencies, but the unit tests do. I am using version
-0.11.2 of SBT to manage them. There are 2 sub-projects:
-
- * `lib` contains the library and the unit tests (task `test`)
- * `gui` contains the interactive testing GUI (task `run`)
-
-The SBT configuration is a little non-standard to avoid having a huge deep
-directory structure for five source code files.
+0.11.2 of SBT to manage them. As expected the `test` task runs the unit
+tests. To run the interactive test gui use `test:run`.
 
 
 Release Notes
