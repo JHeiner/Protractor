@@ -4,5 +4,6 @@
 /eclipseLib/.cache
 /eclipseTest/bin/
 /eclipseTest/.cache
+/eclipseTest/target/
 /project/
 /target/

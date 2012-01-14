@@ -54,6 +54,10 @@ how to add the three Protractor projects to your workspace:
  * do **NOT** copy them into workspace - you will break links
  * just click `Finish`
 
+The projects include two run/debug configurations, one for the unit tests,
+and one for the interactive GUI. Use the `Run / Run Configurations...` (or
+`Run / Debug Configurations...`) menu to launch them.
+
 _Warning_ : The TestGUI and UnitTests source code links overlap, so be
 careful about opening files from the correct project. Sigh... perhaps some
 day resource filters will work with linked resources.
@@ -67,13 +71,12 @@ project as officially having been released yet. But feel free to poke around
 and poke fun if you want. There's a lot of work to do, here are my ideas for
 milestones for future versions:
 
- * `0.3` support building using the Eclipse Scala-IDE
  * `0.4` clean up the source code
-          * move old cruft to the test packages
-          * write a bunch of comments (scaladoc & otherwise)
+	* move old cruft to the test packages
+	* write a bunch of comments (scaladoc & otherwise)
  * `0.5` add the 3D version of the algorithm
  * `0.6` add tools to evaluate performance & results
-          * somehow to collect a bunch of data
-          * goal is to justify deviations from the published algorithm
+	* somehow to collect a bunch of data
+	* goal is to justify deviations from the published algorithm
  * `Phase 2` **?**
  * `Phase 3` Profit

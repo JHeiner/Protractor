@@ -42,7 +42,12 @@ import protractor.minutiae.SeqReal.toSeqReal
 //import java.awt.event.MouseEvent.{MOUSE_PRESSED,MOUSE_DRAGGED,MOUSE_RELEASED}
 import scala.collection.immutable.TreeMap
 
-class Spec extends SpecificationWithJUnit with ScalaCheck with DataTables
+object Spec
+{
+  def main( arguments:Array[String] ) {
+    specs2.run.main( "protractor.test.Spec" +: arguments ) }
+}
+class Spec extends Specification with ScalaCheck with DataTables
 {
   type XYArray = Array[Double]
 
@@ -179,7 +184,7 @@ class Spec extends SpecificationWithJUnit with ScalaCheck with DataTables
 		  (toSeqReal(one) dot two  must beNearDot) &&
 		  (toSeqReal(one) dotKahan two  must beNearDot)) } )
   }^
-  "all the Float dot implementations are close" ! {
+  "all the Float dot implementations are close (sometimes fails, rerun)" ! {
 	(xyGen,xyGen)( (one:XYArray,two:XYArray) =>
 	  (one.length == 2*Samples) ==> // prevents shrinkage
 	  (two.length == 2*Samples) ==> // prevents shrinkage
