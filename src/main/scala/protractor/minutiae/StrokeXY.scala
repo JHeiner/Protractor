@@ -31,7 +31,6 @@
 package protractor.minutiae
 
 import protractor._
-import SeqReal._
 import scala.annotation.tailrec
 
 case class StrokeXY( pauseBefore:Time,
@@ -42,9 +41,14 @@ case class StrokeXY( pauseBefore:Time,
   val yNx = new IndexedSeq[Coordinate] {
     def length = xy.length ; def apply( index:Int ) =
       if ( (index & 1 ) == 0 ) xy( index + 1 ) else - xy( index - 1 ) }
-  val mm = interleaved.dotSelf
+  val mm = thisDot(interleaved)
   def optimal( fixed:StrokeXY ):Angle =
-    java.lang.Math.atan2( xy dot fixed.yNx, xy dot fixed.xy )
+    java.lang.Math.atan2( thisDot(fixed.yNx), thisDot(fixed.xy) )
+  def thisDot( that:Interleaved ):Double = {
+    var sum = 0.0 ; val one = interleaved ; val two = that
+    var i = one.length ; require( i == two.length, "unexpected length" )
+    while ( i > 0 ) { i -= 1 ; sum += one(i) * two(i) }
+    sum }
   def compareAt( sin:Double, cos:Double, fixed:StrokeXY ):Similarity =
     if ( mm == 0 && fixed.mm == 0 ) 1 else {
       @tailrec def cmp( i:Int, prod:Double, dist:Double ):Similarity =
@@ -64,7 +68,16 @@ case class StrokeXY( pauseBefore:Time,
   def sumXY:Array[Coordinate] =
     xy.grouped(2).toList.transpose.map{_.sum}.toArray
   def rotate( sin:Double, cos:Double ) =
-    StrokeXY(pauseBefore,xy.rotXY(sin,cos),duration)
+    if ( sin==0 && cos==1 ) this else
+    StrokeXY(pauseBefore,rotXY(sin,cos),duration)
+  def rotXY( sin:Double, cos:Double ):Interleaved = {
+    val a = Array.ofDim[Double](2*Samples)
+    val b = interleaved
+    var i = b.length ; while ( i > 0 ) {
+      i -= 1 ; val y = b(i) ; i -= 1 ; val x = b(i)
+      a(i+0) = cos * x - sin * y
+      a(i+1) = sin * x + cos * y }
+    ImmutableValArray(a) }
   override def toString =
     ( if (pauseBefore == 0) "" else "Pause("+pauseBefore+")" )+
   xy.mkString( "StrokeXY("+duration+", ",",",")" )

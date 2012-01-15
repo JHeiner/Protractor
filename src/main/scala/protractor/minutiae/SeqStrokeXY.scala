@@ -47,6 +47,6 @@ extends ImmutableRefArray(a) with StrokeSeq
       fixed match { case that:SeqStrokeXY => {
 	val sin = java.lang.Math.sin(r.angle)
 	val cos = java.lang.Math.cos(r.angle)
-	val d = for ( (t,o) <- this.zip(that) ) yield t.compareAt(sin,cos,o)
+	val d:Seq[Similarity] = for ( (t,o) <- this.zip(that) ) yield t.compareAt(sin,cos,o)
 	d.product }}
 }

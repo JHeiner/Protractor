@@ -28,14 +28,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package protractor.minutiae
+package protractor.test
 
 import scala.annotation.tailrec
 import SeqReal.toSeqReal
 
-object SeqDouble
+object SeqFloat
 {
-  type T = Double
+  type T = Float
   // BEGIN copy+paste >>>>>>>>>>>>>>>>
 
   def dot( one:Array[T], two:Array[T] ) = {
@@ -53,4 +53,18 @@ object SeqDouble
     dp( one.length - 1, 0, 0 ) }
 
   // <<<<<<<<<<<<<<<< copy+paste END
+
+  def dotDouble( one:Array[T], two:Array[T] ):Double = {
+    @tailrec def dp( i:Int, sum:Double ):Double =
+      if ( 0 > i ) sum else
+	dp( i - 1, sum + one(i).toDouble * two(i).toDouble )
+    dp( one.length - 1, 0 ) }
+
+  def dotKahanDouble( one:Array[T], two:Array[T] ):Double = {
+    @tailrec def dp( i:Int, carry:Double, sum:Double ):Double =
+      if ( 0 > i ) sum else {
+	val value = one(i).toDouble * two(i).toDouble - carry
+	val total = sum + value
+	dp( i - 1, (total - sum) - value, total ) }
+    dp( one.length - 1, 0, 0 ) }
 }

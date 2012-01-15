@@ -36,8 +36,8 @@ import org.specs2.matcher.{Matcher,Expectable,DataTables}
 import org.scalacheck._
 import java.lang.Math.{PI,abs,atan2,cos,sin,sqrt,getExponent,pow}
 import java.lang.Double.MIN_EXPONENT
-import protractor.minutiae.{Samples,SeqDouble,SeqFloat}
-import protractor.minutiae.SeqReal.toSeqReal
+import protractor.minutiae.Samples
+import SeqReal.toSeqReal
 //import protractor.minutiae.MouseEventBufferStroke
 //import java.awt.event.MouseEvent.{MOUSE_PRESSED,MOUSE_DRAGGED,MOUSE_RELEASED}
 import scala.collection.immutable.TreeMap
