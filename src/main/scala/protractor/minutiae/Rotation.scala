@@ -38,9 +38,9 @@ case class Rotation( angle:Double ) extends Immutable
     else if ( max < angle ) Rotation(max)
     else this }
 
-  def apply( strokes:StrokeSeq ):StrokeSeq =
+  def apply( strokes:SeqStroke ):SeqStroke =
     strokes match { case that:SeqStrokeXY => {
       val sin = java.lang.Math.sin(angle) ; val cos = java.lang.Math.cos(angle)
-      // TODO: new StrokeSeq(this.map(_.rotate(sin,cos)).toArray)
-      StrokeSeq(that map { _.rotate(sin,cos) } ) }}
+      // TODO: new SeqStroke(this.map(_.rotate(sin,cos)).toArray)
+      SeqStroke(that map { _.rotate(sin,cos) } ) }}
 }

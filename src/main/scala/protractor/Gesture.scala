@@ -30,7 +30,7 @@
 
 package protractor
 
-class Gesture( val strokes:minutiae.StrokeSeq, val limit:Angle )
+class Gesture( val strokes:minutiae.SeqStroke, val limit:Angle )
 extends Immutable
 {
   require( limit >= 0, "limit is negative" )

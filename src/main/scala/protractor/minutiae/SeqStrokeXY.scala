@@ -33,16 +33,16 @@ package protractor.minutiae
 import protractor._
 
 class SeqStrokeXY( a:Array[StrokeXY] )
-extends ImmutableRefArray(a) with StrokeSeq
+extends ImmutableRefArray(a) with SeqStroke
 {
-  def optimal( fixed:StrokeSeq ):Rotation =
+  def optimal( fixed:SeqStroke ):Rotation =
     if (size != fixed.size) ZeroRotation else
       fixed match { case that:SeqStrokeXY => {
 	val angles:Seq[Angle] =
 	  for ( (t,o) <- this.zip(that) ) yield t.optimal(o)
 	Rotation( angles.sum / angles.size ) }}
 
-  def compareAt( r:Rotation, fixed:StrokeSeq ):Similarity =
+  def compareAt( r:Rotation, fixed:SeqStroke ):Similarity =
     if (size != fixed.size) 0 else
       fixed match { case that:SeqStrokeXY => {
 	val sin = java.lang.Math.sin(r.angle)

@@ -32,15 +32,15 @@ package protractor.minutiae
 
 import protractor._
 
-trait StrokeSeq extends IndexedSeq[Stroke]
+trait SeqStroke extends IndexedSeq[Stroke]
 {
-  def optimal( fixed:StrokeSeq ):Rotation
-  def compareAt( r:Rotation, fixed:StrokeSeq ):Similarity
+  def optimal( fixed:SeqStroke ):Rotation
+  def compareAt( r:Rotation, fixed:SeqStroke ):Similarity
 }
 
-object StrokeSeq
+object SeqStroke
 {
-  implicit def apply( strokes:Seq[Stroke] ):StrokeSeq = {
+  implicit def apply( strokes:Seq[Stroke] ):SeqStroke = {
     val array = strokes.map(_.asInstanceOf[StrokeXY]).toArray
     val centroid = (for ( s <- array ) yield s.sumXY).transpose.map{_.sum}
     require( centroid.forall{isNearZero(_)}, "not centered" )

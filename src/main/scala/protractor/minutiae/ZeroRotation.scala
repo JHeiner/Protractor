@@ -33,5 +33,5 @@ package protractor.minutiae
 object ZeroRotation extends Rotation(0)
 {
   override def limited( to:Double ) = this
-  override def apply( strokes:StrokeSeq ):StrokeSeq = strokes
+  override def apply( strokes:SeqStroke ):SeqStroke = strokes
 }
