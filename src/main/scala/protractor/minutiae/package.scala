@@ -30,6 +30,19 @@
 
 package protractor
 
+/**
+ * Implements a variant of the algorithm described in:
+ *
+ * Yang Li. 2010. Protractor: a fast and accurate gesture recognizer. In <i>Proceedings of the 28th international conference on Human factors in computing systems</i> (CHI '10). ACM, New York, NY, USA, 2169-2172. DOI=10.1145/1753326.1753654 http://doi.acm.org/10.1145/1753326.1753654
+ *
+ * http://www.yangl.org/pdf/protractor-chi2010.pdf
+ *
+ * Which is an optimization of the algorithm described in:
+ *
+ * Jacob O. Wobbrock, Andrew D. Wilson, and Yang Li. 2007. Gestures without libraries, toolkits or training: a $1 recognizer for user interface prototypes. In Proceedings of the 20th annual ACM symposium on User interface software and technology (UIST '07). ACM, New York, NY, USA, 159-168. DOI=10.1145/1294211.1294238 http://doi.acm.org/10.1145/1294211.1294238 
+ *
+ * http://faculty.washington.edu/wobbrock/pubs/uist-07.1.pdf
+ */
 package object minutiae
 {
   val Samples = 32

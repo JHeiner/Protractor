@@ -28,38 +28,90 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/**
- * Implements a variant of the algorithm described in:
- *
- * Yang Li. 2010. Protractor: a fast and accurate gesture recognizer. In <i>Proceedings of the 28th international conference on Human factors in computing systems</i> (CHI '10). ACM, New York, NY, USA, 2169-2172. DOI=10.1145/1753326.1753654 http://doi.acm.org/10.1145/1753326.1753654
- *
- * http://www.yangl.org/pdf/protractor-chi2010.pdf
- *
- * Which is an optimization of the algorithm described in:
- *
- * Jacob O. Wobbrock, Andrew D. Wilson, and Yang Li. 2007. Gestures without libraries, toolkits or training: a $1 recognizer for user interface prototypes. In Proceedings of the 20th annual ACM symposium on User interface software and technology (UIST '07). ACM, New York, NY, USA, 159-168. DOI=10.1145/1294211.1294238 http://doi.acm.org/10.1145/1294211.1294238 
- *
- * http://faculty.washington.edu/wobbrock/pubs/uist-07.1.pdf
- */
+/** The public API for this gesture recognition library. The implementation
+  * details (including documentation of the algorithm) are "hidden" in the
+  * [[protractor.minutiae]] package.
+  *
+  * The fundamental units that the recognition algorithm works with are
+  * [[protractor.Stroke]] instances, which can be the movement of the mouse
+  * starting at a `mousePressed` and ending with a `mouseReleased`, or the
+  * movement of a finger while it is in contact with a touch-sensitive device.
+  *
+  * A sequence of one or more consecutive [[protractor.Stroke]] instances, with
+  * [[protractor.Pause]] intervals between them, is wrapped in a
+  * [[protractor.Gesture]] instance, which provides the methods to compare it
+  * to other [[protractor.Gesture]] instances.
+  *
+  * [[protractor.MouseEventBuffer]] can be used to collect incoming
+  * [[java.awt.event.MouseEvent]] data and convert it to a
+  * [[protractor.Gesture]].
+  *
+  * @define uniform The points are expected to be sampled at a uniform rate (so
+  * the time elapsed between each pair of consecutive points is a constant).
+  */
 package object protractor
 {
-  type Stroke = minutiae.Stroke // extends Immutable
+  /** Holds motion data. Instances are immutable. The details are not
+    * relevant to most applications, but can be found at
+    * [[protractor.minutiae.Stroke]].
+    */
+  type Stroke = minutiae.Stroke
 
-  type Time = Double // in milliseconds
-  type Coordinate = Double // in pixels
+  /** Time values are double precision, but the units are unspecified.
+    * The application must be consistent if it wants meaningful results.
+    */
+  type Time = Double
+
+  /** Coordinate values are double precision, but the units are unspecified.
+    * The application must be consistent if it wants meaningful results.
+    */
+  type Coordinate = Double
+
+  /** Angle values are double precision and measured in radians.
+    */
+  type Angle = Double
+
+  /** Holds rotation data (an angle and an axis). Instances are immutable.
+    * The details are not relevant to most applications, but can be found at
+    * [[protractor.minutiae.Rotation]].
+    */
+  type Rotation = minutiae.Rotation
+
+  /** A value for use in methods of [[protractor.Gesture]] to indicate that
+    * the angle of rotation should not be limited.
+    */
+  val NoLimit:Angle = 4 // anything PI or larger works
+
+  /** Results of a comparison between two [[protractor.Gesture]] instances.
+    * Values are double precision in the unit range, where 1.0 indicates the
+    * two instances are identical, and 0.0 indicates no similarity at all.
+    */
+  type Similarity = Double
+
+  /** Constructs a [[protractor.Stroke]] of two-dimensional points. $uniform
+    * @param duration total time elapsed between the first and last coords -
+    * should be non-zero unless there is only a single point.
+    * @param xyInterleaved the coords of each two-dimensional point. There must
+    * be an even number of coords, and at least two of them. The `x` coord of
+    * the first point comes first, followed by the `y` coord of the first
+    * point, then the `x` coord of the second point, etc.
+    */
   def StrokeXY( duration:Time, xyInterleaved:Coordinate * ):Stroke =
 	minutiae.StrokeXY( 0, xyInterleaved, duration )
 
+  /** Placed before a [[protractor.Stroke]] constructor in the call to the
+    * [[protractor.Gesture]] constructor to indicate the length of pauses
+    * between strokes.
+    */
   def Pause( pauseBefore:Time ) = new {
 	def StrokeXY( duration:Time, xyInterleaved:Coordinate * ):Stroke =
 	  minutiae.StrokeXY( pauseBefore, xyInterleaved, duration ) }
 
-  type Angle = Double // in radians, of course
-  val NoLimit:Angle = 4 // anything PI or larger
-
+  /** Constructs a [[protractor.Gesture]] from a Seq[ [[protractor.Stroke]] ].
+    * The first stroke shouldn't have a [[protractor.Pause]], but all the
+    * subsequent ones should (and should be non-zero). Calling the `toString`
+    * method on a [[protractor.Gesture]] instance returns Scala source code
+    * that calls this function to re-construct the [[protractor.Gesture]].
+    */
   def Gesture( strokes:Stroke * ):Gesture = new Gesture( strokes, NoLimit )
-  def Gesture( input:MouseEventBuffer ):Gesture = input.gesture
-
-  type Rotation = minutiae.Rotation // Angle + axis, extends Immutable
-  type Similarity = Double // 1.0 is identical .. 0.0 is least similar
 }

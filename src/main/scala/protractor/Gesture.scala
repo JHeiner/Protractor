@@ -30,25 +30,58 @@
 
 package protractor
 
+/** Holds the information about a gesture - possibly one just captured from
+  * the user's manipulation of a hardware device (mouse, touchscreen, etc.),
+  * or maybe one that has been stored in the application with an action to
+  * take when the user makes that gesture. The primary purpose of this
+  * library is to provide a way to measure how similar two `Gesture`s are to
+  * each other - the [[protractor.Gesture.similarity]] method does that.
+  *
+  * Note that this constructor is not really part of the public API - most
+  * applications will use [[protractor.MouseEventBuffer.gesture]] or the
+  * [[protractor.Gesture]] function in the [[protractor]] package object.
+  *
+  * @param strokes the "massaged" stroke data
+  * @param limit the maximum angle this gesture is allowed to be rotated
+  * before calculating the distances between stroke points.
+  */
 class Gesture( val strokes:minutiae.SeqStroke, val limit:Angle )
 extends Immutable
 {
   require( limit >= 0, "limit is negative" )
+
+  /** Returns a new `Gesture` with the same strokes, but a different limit. */
   def limit( limit:Angle ) = new Gesture( strokes, limit )
+
+  /** Returns a new `Gesture` with the same limit, rotating the strokes. */
   def rotate( r:Rotation ) = new Gesture( r(strokes), limit )
 
+  /** Returns Scala source code that reconstructs this `Gesture`. */
   override def toString = strokes.mkString("Gesture( ",", "," )") +
 	(if ( limit >= java.lang.Math.PI ) "" else ".limit("+limit+")")
 
+  /** Returns the [[protractor.Rotation]] which, when applied to this
+    * `Gesture` minimizes the distance between the rotated strokes and the
+    * `fixed` `Gesture`'s strokes.
+    */
   def optimal( fixed:Gesture ):Rotation =
     this.strokes.optimal(fixed.strokes)
 
+  /** Returns a [[protractor.Rotation]] with the same axis as the `r`
+    * parameter, but with an angle that exceeds neither this
+    * `Gesture`'s nor the `fixed` parameter's `limit` in magnitude.
+    */
   def limited( r:Rotation, fixed:Gesture ):Rotation =
     r.limited( this.limit min fixed.limit )
 
+  /** Rotates this `Gesture`'s strokes by the given [[protractor.Rotation]],
+    * then compares those to the `fixed` parameter's strokes.
+    */
   def compareAt( r:Rotation, fixed:Gesture ):Similarity =
     this.strokes.compareAt(r,fixed.strokes)
 
+  /** Returns `compareAt( limited( optimal(fixed), fixed ), fixed )`
+    */
   def similarity( fixed:Gesture ):Similarity =
     compareAt( limited( optimal(fixed), fixed ), fixed )
 }

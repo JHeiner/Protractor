@@ -30,17 +30,39 @@
 
 package protractor
 
+/** Collects AWT events, provides [[protractor.MouseEventBuffer.gesture]] to
+  * convert the mouse motion data into a [[protractor.Gesture]] instance.
+  * The [[protractor.gui.Doodle]] demonstrates its use.
+  *
+  * ''Warning'' : Instances of this class are '''not''' thread safe. But In
+  * a typical AWT application all events are delivered by a single thread,
+  * so synchronization not an issue.
+  */
 class MouseEventBuffer extends minutiae.MouseEventBufferStrokes
 {
+//TODO: change from inheriting to a field member to expose the right API
+
+  /** Discard all collected stroke data.
+    */
   def clear() { strokes.clear() }
 
   import java.awt.event.MouseEvent
 
+  /** Add a `mousePressed` event to the stroke data.
+    */
   def pressed( e:MouseEvent ) {
     startNewStroke( e.getWhen ) ; add( e.getX, e.getY, e.getWhen ) }
+
+  /** Add a `mouseDragged` event to the stroke data.
+    */
   def dragged( e:MouseEvent ) { add( e.getX, e.getY, e.getWhen ) }
+
+  /** Add a `mouseReleased` event to the stroke data.
+    */
   def released( e:MouseEvent ) { add( e.getX, e.getY, e.getWhen ) }
 
+  /** Calls [[java.awt.Graphics.drawPolyline]] with the collected stroke data.
+    */
   def drawPolyline( g:java.awt.Graphics ) {
     strokes foreach { _.drawPolyline(g) } }
 }
