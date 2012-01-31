@@ -34,52 +34,68 @@ import protractor._
 import scala.annotation.tailrec
 
 case class StrokeXY( pauseBefore:Time,
-		    interleaved:Interleaved, duration:Time ) extends Stroke
+                    interleaved:Interleaved, duration:Time ) extends Stroke
 {
+  // = basic stuff =
+
   def dimension = 2 ; def xy = interleaved
   require( xy.size == 2 * Samples, "stroke is wrong length" )
+
+  override def toString =
+    ( if (pauseBefore == 0) "" else "Pause("+pauseBefore+")" )+
+          xy.mkString( "StrokeXY("+duration+", ",",",")" )
+
+  // = vector calculations =
+
   val yNx = new IndexedSeq[Coordinate] {
     def length = xy.length ; def apply( index:Int ) =
       if ( (index & 1 ) == 0 ) xy( index + 1 ) else - xy( index - 1 ) }
   val mm = thisDot(interleaved)
-  def optimal( fixed:StrokeXY ):Angle =
-    java.lang.Math.atan2( thisDot(fixed.yNx), thisDot(fixed.xy) )
+
+  def sumXY:Array[Coordinate] =
+    xy.grouped(2).toList.transpose.map{_.sum}.toArray
+
   def thisDot( that:Interleaved ):Double = {
     var sum = 0.0 ; val one = interleaved ; val two = that
     var i = one.length ; require( i == two.length, "unexpected length" )
     while ( i > 0 ) { i -= 1 ; sum += one(i) * two(i) }
     sum }
+
+  // = comparison algorithm components =
+
+  def optimal( fixed:StrokeXY ):Angle =
+    java.lang.Math.atan2( thisDot(fixed.yNx), thisDot(fixed.xy) )
+
   def compareAt( sin:Double, cos:Double, fixed:StrokeXY ):Similarity =
     if ( mm == 0 && fixed.mm == 0 ) 1 else {
       @tailrec def cmp( i:Int, prod:Double, dist:Double ):Similarity =
-	if ( 0 <= i ) {
-	  val f = fixed.xy(i) ; val r =
-	    if ( (i & 1 ) == 0 ) cos*xy(i) - sin*xy(i+1)
-	    else sin*xy(i-1) + cos*xy(i)
-	  val p = r * f ; val d = r - f
-	  cmp( i - 1, prod + p, dist + d*d ) }
-	    else {
-	      val dot = prod * prod / mm / fixed.mm
-	      val sim = if ( java.lang.Double.isNaN(dot) ) 0
-			else java.lang.Math.sqrt( dot / ( 1 + dist/1000 ))
-	      //println( "da: sqrt("+dot+" /1+ "+dist+") = "+sim )
-	      if ( sim > 1 ) 1 else sim } // can have tiny rounding errors
+        if ( 0 <= i ) {
+          val f = fixed.xy(i) ; val r =
+            if ( (i & 1 ) == 0 ) cos*xy(i) - sin*xy(i+1)
+            else sin*xy(i-1) + cos*xy(i)
+          val p = r * f ; val d = r - f
+          cmp( i - 1, prod + p, dist + d*d ) }
+            else {
+              val dot = prod * prod / mm / fixed.mm
+              val sim = if ( java.lang.Double.isNaN(dot) ) 0
+                        else java.lang.Math.sqrt( dot / ( 1 + dist/1000 ))
+              //println( "da: sqrt("+dot+" /1+ "+dist+") = "+sim )
+              if ( sim > 1 ) 1 else sim } // can have tiny rounding errors
       cmp( 2*Samples - 1, 0.0, 0.0 ) }
-  def sumXY:Array[Coordinate] =
-    xy.grouped(2).toList.transpose.map{_.sum}.toArray
-  def rotate( sin:Double, cos:Double ) =
+
+  // = debug/testing/visualization =
+
+  // implements Rotation.apply
+  def rotate( sin:Double, cos:Double ) = {
+    def rotXY( sin:Double, cos:Double ):Interleaved = {
+      val a = Array.ofDim[Double](2*Samples)
+      val b = interleaved
+      var i = b.length ; while ( i > 0 ) {
+        i -= 1 ; val y = b(i) ; i -= 1 ; val x = b(i)
+        a(i+0) = cos * x - sin * y
+        a(i+1) = sin * x + cos * y }
+      ImmutableValArray(a) }
     if ( sin==0 && cos==1 ) this else
-    StrokeXY(pauseBefore,rotXY(sin,cos),duration)
-  def rotXY( sin:Double, cos:Double ):Interleaved = {
-    val a = Array.ofDim[Double](2*Samples)
-    val b = interleaved
-    var i = b.length ; while ( i > 0 ) {
-      i -= 1 ; val y = b(i) ; i -= 1 ; val x = b(i)
-      a(i+0) = cos * x - sin * y
-      a(i+1) = sin * x + cos * y }
-    ImmutableValArray(a) }
-  override def toString =
-    ( if (pauseBefore == 0) "" else "Pause("+pauseBefore+")" )+
-  xy.mkString( "StrokeXY("+duration+", ",",",")" )
+    StrokeXY(pauseBefore,rotXY(sin,cos),duration) }
 }
 

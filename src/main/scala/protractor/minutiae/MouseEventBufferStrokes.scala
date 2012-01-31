@@ -36,7 +36,7 @@ class MouseEventBufferStrokes
 {
   var firstPress:Long = 0
   var lastDelta:Int = 0
-  val strokes = new scala.collection.mutable.ArrayBuffer[MouseEventBufferStroke]
+  val strokes = new collection.mutable.ArrayBuffer[MouseEventBufferStroke]
 
   def startNewStroke( when:Long ) {
     if ( strokes.isEmpty ) {
@@ -46,23 +46,24 @@ class MouseEventBufferStrokes
   def add( x:Int, y:Int, when:Long ) {
     val delta = when - firstPress
     if ( delta < lastDelta )
-      throw new RuntimeException( "time going backwards?" )
+      throw new IllegalArgumentException( "time going backwards?" )
     if ( Int.MaxValue < delta )
-      throw new RuntimeException( "stroke is too long" )
+      throw new IllegalArgumentException( "stroke is too long" )
     lastDelta = delta.toInt
     strokes.last.add( x, y, lastDelta ) }
 
   def gesture = {
-    require( ! strokes.isEmpty, "no strokes" )
+    if ( strokes.isEmpty )
+      throw new IllegalStateException( "no strokes" )
     var cx:Coordinate = 0 ; var cy:Coordinate = 0
     for ( s <- strokes ) { s.sample ; cx = cx + s.sx ; cy = cy + s.sy }
+    // now we know the sum of all the samples, calculate the centroid
     cx = cx / Samples / strokes.size ; cy = cy / Samples / strokes.size
-    for ( s <- strokes ) s.center(cx,cy)
     val array = Array.ofDim[StrokeXY](strokes.size)
-    var last = 0.0
+    var prev:MouseEventBufferStroke = null
     for ( i <- 0 until array.length ) {
       val next = strokes(i)
-      array(i) = next.toStrokeXY( last )
-      last = next.lastTime }
+      array(i) = next.stroke( cx,cy, prev )
+      prev = next }
     new Gesture( new SeqStrokeXY( array ), NoLimit ) }
 }

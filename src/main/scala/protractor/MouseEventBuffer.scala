@@ -38,32 +38,34 @@ package protractor
   * a typical AWT application all events are delivered by a single thread,
   * so synchronization not an issue.
   */
-class MouseEventBuffer extends minutiae.MouseEventBufferStrokes
+class MouseEventBuffer
 {
-//TODO: change from inheriting to a field member to expose the right API
+  private val strokes = new minutiae.MouseEventBufferStrokes
 
-  /** Discard all collected stroke data.
-    */
-  def clear() { strokes.clear() }
+  /** Discard all collected stroke data. */
+  def clear() {
+    strokes.strokes.clear() }
 
   import java.awt.event.MouseEvent
 
-  /** Add a `mousePressed` event to the stroke data.
-    */
+  /** Add a `mousePressed` event to the stroke data. */
   def pressed( e:MouseEvent ) {
-    startNewStroke( e.getWhen ) ; add( e.getX, e.getY, e.getWhen ) }
+    strokes.startNewStroke( e.getWhen )
+    strokes.add( e.getX, e.getY, e.getWhen ) }
 
-  /** Add a `mouseDragged` event to the stroke data.
-    */
-  def dragged( e:MouseEvent ) { add( e.getX, e.getY, e.getWhen ) }
+  /** Add a `mouseDragged` event to the stroke data. */
+  def dragged( e:MouseEvent ) {
+    strokes.add( e.getX, e.getY, e.getWhen ) }
 
-  /** Add a `mouseReleased` event to the stroke data.
-    */
-  def released( e:MouseEvent ) { add( e.getX, e.getY, e.getWhen ) }
+  /** Add a `mouseReleased` event to the stroke data. */
+  def released( e:MouseEvent ) {
+    strokes.add( e.getX, e.getY, e.getWhen ) }
 
-  /** Calls [[java.awt.Graphics.drawPolyline]] with the collected stroke data.
-    */
+  /** Returns a new Gesture by sampling the collected data. */
+  def toGesture = strokes.gesture
+
+  /** Calls [[java.awt.Graphics.drawPolyline]] with the collected data. */
   def drawPolyline( g:java.awt.Graphics ) {
-    strokes foreach { _.drawPolyline(g) } }
+    strokes.strokes foreach { _.drawPolyline(g) } }
 }
 

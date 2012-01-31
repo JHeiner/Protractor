@@ -47,6 +47,8 @@ object Spec
   def main( arguments:Array[String] ) {
     specs2.run.main( "protractor.test.Spec" +: arguments ) }
 }
+
+@org.junit.runner.RunWith(classOf[org.specs2.runner.JUnitRunner])
 class Spec extends Specification with ScalaCheck with DataTables
 {
   type XYArray = Array[Double]

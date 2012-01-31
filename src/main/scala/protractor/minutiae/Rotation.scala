@@ -32,15 +32,18 @@ package protractor.minutiae
 
 case class Rotation( angle:Double ) extends Immutable
 {
+  /** Returns a Rotation with the same axis, but with an angle constrained to
+    * be not larger than the given value. */
   def limited( to:Double ) = {
     val max = to ; val min = - max
     if ( angle < min ) Rotation(min)
     else if ( max < angle ) Rotation(max)
     else this }
 
+  /** Rotates gesture data. This method is not used in comparison, but it is
+    * handy for providing visual feedback of the effects of rotation. */
   def apply( strokes:SeqStroke ):SeqStroke =
     strokes match { case that:SeqStrokeXY => {
       val sin = java.lang.Math.sin(angle) ; val cos = java.lang.Math.cos(angle)
-      // TODO: new SeqStroke(this.map(_.rotate(sin,cos)).toArray)
       SeqStroke(that map { _.rotate(sin,cos) } ) }}
 }
