@@ -31,17 +31,66 @@
 package protractor
 
 /**
- * Implements a variant of the algorithm described in:
+ * Implements a variant of the
+ * [[http://www.yangl.org/pdf/protractor-chi2010.pdf Protractor]]^[Li]^
+ * gesture recognizer (which is an optimization of the
+ * [[http://www.yangl.org/pdf/protractor-chi2010.pdf $1]]^[Wobbrock]^
+ * recognizer).
+
+ * All three papers base their sampling on the total distance travelled during
+ * a stroke. That total is divided into 32 equal lengths and the stroke is thus
+ * resampled uniformly in space. But that throws away the timing information
+ * that is available from every UI library I've ever seen.
+
+ * This library records the timestamps of each coordinate event and samples
+ * using the total duration of a stroke, ignoring the length completely. If a
+ * stroke is performed with a constant velocity, these two approaches produce
+ * the same results. But temporal sampling allows the recognizer to distingush
+ * between such strokes and strokes which start slow and finish fast, and
+ * change velocities in other ways.
+
+ * The papers either perform some scaling (e.g. make strokes fit to a unit
+ * size) or calculate the similarity using a metric that ignores scale. The
+ * only advantage of this approach would be that you only need one instance of
+ * a gesture (say a 'circle') to match any 'circle' of any size. Unfortunately
+ * that approach precludes the possibility of assigning different meanings to
+ * big and small 'circle's. This library does not throw out scale information.
+
+ * Similarity scores produced by this library are in the unit range. So 0.0
+ * means completely different, and 1.0 means identical. There were some
+ * surprises in the metrics used in the papers. ACos, for example, has two
+ * maxima PI apart, requiring extra work to make sure to avoid the wrong
+ * one. TODO: check paper to make sure I'm remembering this correctly... This
+ * library is closest to the 3D paper's similarity metric, except it is
+ * normalized to the unit range.
+
+ * The papers focus on single-stroke gestures. It is very easy to extend such
+ * recognizers to handle multi-stroke gestures, and many such extensions have
+ * been published. This library supports multi-stroke gestures, but currently
+ * in a not very sophisticated way. TODO: As noted above, the timestamp data is
+ * available, but it is unfortunately being ignored when combining the scores
+ * for single strokes into scores for multi-stroke gestures. For now, gestures
+ * without equal numbers of strokes have similarity 0.0, otherwise it's the
+ * product of all the single-stroke scores.
+
+ * == Citations ==
+ * 
+ * [[http://doi.acm.org/10.1145/1943403.1943468 Sven Kratz and Michael Rohs.
+ * 2011. Protractor3D: a closed-form solution to rotation-invariant 3D
+ * gestures. In Proceedings of the 16th international conference on Intelligent
+ * user interfaces (IUI '11). ACM, New York, NY, USA, 371-374.
+ * DOI=10.1145/1943403.1943468]]
  *
- * Yang Li. 2010. Protractor: a fast and accurate gesture recognizer. In <i>Proceedings of the 28th international conference on Human factors in computing systems</i> (CHI '10). ACM, New York, NY, USA, 2169-2172. DOI=10.1145/1753326.1753654 http://doi.acm.org/10.1145/1753326.1753654
+ * [[http://doi.acm.org/10.1145/1753326.1753654 Yang Li. 2010. Protractor: a
+ * fast and accurate gesture recognizer. In <i>Proceedings of the 28th
+ * international conference on Human factors in computing systems</i> (CHI
+ * '10). ACM, New York, NY, USA, 2169-2172. DOI=10.1145/1753326.1753654]]
  *
- * http://www.yangl.org/pdf/protractor-chi2010.pdf
- *
- * Which is an optimization of the algorithm described in:
- *
- * Jacob O. Wobbrock, Andrew D. Wilson, and Yang Li. 2007. Gestures without libraries, toolkits or training: a $1 recognizer for user interface prototypes. In Proceedings of the 20th annual ACM symposium on User interface software and technology (UIST '07). ACM, New York, NY, USA, 159-168. DOI=10.1145/1294211.1294238 http://doi.acm.org/10.1145/1294211.1294238 
- *
- * http://faculty.washington.edu/wobbrock/pubs/uist-07.1.pdf
+ * [[http://doi.acm.org/10.1145/1294211.1294238 Jacob O. Wobbrock, Andrew D.
+ * Wilson, and Yang Li. 2007. Gestures without libraries, toolkits or training:
+ * a $1 recognizer for user interface prototypes. In Proceedings of the 20th
+ * annual ACM symposium on User interface software and technology (UIST '07).
+ * ACM, New York, NY, USA, 159-168. DOI=10.1145/1294211.1294238]]
  */
 package object minutiae
 {
